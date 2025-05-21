@@ -3,18 +3,29 @@
 game::game(QWidget *parent)
     : QMainWindow(parent)
 
-{   //set title
-    setWindowTitle("Five Chess");
+{
+    //preview
+    showpreview = false;
+
+    moveX = 0;
+    moveY = 0;
+    X = -1;
+    Y = -1;
+
+    flags = 0;
+
+    //set title
+    setWindowTitle("Five Chess- pvp");
 
     //set size of window
     setMinimumSize(1000,800);
     setMaximumSize(1000,800);
 
     //set botton
-    QPushButton *button_start = new QPushButton(this);
-    button_start->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
-    button_start->setGeometry(QRect(785,100,200,50));
-    button_start->setText("game mode");
+    //QPushButton *button_start = new QPushButton(this);
+    //button_start->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
+    //button_start->setGeometry(QRect(785,100,200,50));
+    //button_start->setText("game mode");
 
 
     //the label
@@ -25,28 +36,10 @@ game::game(QWidget *parent)
 
     // select botton
     game_model = 1;
-    selectModelGroup = new QButtonGroup(this);
 
-    //PVC
-    QRadioButton *pvc = new QRadioButton("PVC",this);
-    selectModelGroup->addButton(pvc,1);
-    pvc->setStyleSheet("font:Bold;font-size:24px;color:black");
-    pvc->setGeometry(825,200,100,30);
-    connect(pvc,SIGNAL(clicked()),this,SLOT(SelecRadio()));
-
-    //PVP
-    QRadioButton *pvp = new QRadioButton("PVP",this);
-    selectModelGroup->addButton(pvp,2);
-    pvp->setStyleSheet("font:Bold;font-size:24px;color:black");
-    pvp->setGeometry(825,300,100,30);
-    connect(pvp,SIGNAL(clicked()),this,SLOT(SelecRadio()));
-
-    //default PVC
-    pvc->setChecked(true);
 
 
     // start and over button
-    flags = 0;
     button = new QPushButton(this);
     button->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
     button->setGeometry(QRect(785,400,200,50));
@@ -68,7 +61,6 @@ game::game(QWidget *parent)
 
     //get mouse message
     setMouseTracking(true);
-    lock = 1;
     memset(chessboard,0,sizeof(chessboard)); // disopse the chessboard
 
 
@@ -154,23 +146,136 @@ void game::paintEvent(QPaintEvent *)
     p.drawEllipse(195,595,10,10);
     p.drawEllipse(595,595,10,10);
     p.drawEllipse(395,395,10,10);
+
+    //draw chessboard
+    for(int i = 0 ;i <15;i++)
+    {
+        for(int j = 0 ; j < 15 ;j++)
+        {
+            if(chessboard[i][j]==1)
+            {
+                brush.setColor(Qt::black);
+                p.setBrush(brush);
+                p.drawEllipse(29+i*50,29+j*50,42,42);
+            }
+            else if(chessboard[i][j]==2)
+            {
+                brush.setColor(Qt::white);
+                p.setBrush(brush);
+                p.drawEllipse(29+i*50,29+j*50,42,42);
+            }
+        }
+    }
+
+    //preview
+    if(showpreview) {
+        QPen pen(Qt::gray, 2, Qt::DashLine);
+        p.setPen(pen);
+
+        // 根据当前玩家设置不同颜色的预览
+        QBrush brush(QColor(0, 0, 0, 100) ); // 预览
+
+        p.setBrush(brush);
+
+        p.drawEllipse(moveX-20, moveY-20 , 40, 40);
+    }
+
+
 }
 
 //mouse moves
 void game::mouseMoveEvent(QMouseEvent *e)
 {
+    int x = e->x();
+    int y = e->y();
 
+
+    if((x < 50 || x > 750 || y < 50 || y > 750)||flags==0) {
+        showpreview = false;
+    }
+    else
+    {
+        showpreview  = true;
+    }
+
+
+    bool found = false;
+    if(showpreview)
+    {
+    for(int i = 0; i < 15; i++) {
+        for(int j = 0; j < 15; j++) {
+            int gridX = 50 + j * 50;
+            int gridY = 50 + i * 50;
+
+            // 计算鼠标与当前交叉点的距离
+            int dx = x - gridX;
+            int dy = y - gridY;
+            int distance = dx * dx + dy * dy;
+
+            // 如果距离小于阈值（例如25像素），认为是这个交叉点
+            if(distance < 25*25) {
+                moveX = gridX;
+                moveY = gridY;
+                X = j;
+                Y = i;
+                found = true;
+                break;
+            }
+        }
+        if(found) break; // 找到后跳出外层循环
+    }
+    }
+
+    update();
 }
+
 
 //mouse click
 void game::mousePressEvent(QMouseEvent *e)
 {
+    // 只处理左键点击
+    if (e->button() != Qt::LeftButton)
+        return;
 
+    int x = e->x();
+    int y = e->y();
+
+    // 检查点击是否在棋盘范围内
+    if (x < 50 || x > 750 || y < 50 || y > 750)
+        return;
+
+    // 将点击位置映射到最近的棋盘交叉点
+
+
+    // 检查该位置是否已经有棋子
+    if (chessboard[X][Y] != 0)
+        return;
+
+    // 放置棋子（1表示黑棋，2表示白棋）
+    chessboard[X][Y] = player;
+
+
+    // 记录落子位置用于悔棋
+    int tx  = X;
+    int ty  = Y;
+    stak.push(QPoint(tx, ty));
+
+    // 检查胜负
+
+    // 切换玩家
+    player = (player == 1) ? 2 : 1;
+
+    // 如果是人机对战模式，且轮到AI
+
+
+    // 重绘界面
+    update();
 }
 
 void game::operat()
 {
-
+    flags = 1;
+    player = 1;
 }
 void game::SelectRadio()
 {

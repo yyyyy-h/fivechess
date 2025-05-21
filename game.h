@@ -22,6 +22,7 @@
 #include <QLabel>
 #include <bits/stdc++.h>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -40,13 +41,14 @@ private:
     int moveX,moveY; // the mouse message
     int currentX,currentY;//the last location of piece
     bool lock; // the lock of chessboard
-    int flags; // the state of game. 0 == start ,1 == over
+    int flags; // the state of game. 1 == start ,0 == over
     int game_model;//  1 == PVC, 2 == PVP
+    int X,Y;
     QPushButton *button;
     QButtonGroup *selectModelGroup;
     QString strWinner;  //dispose the string in qt
     stack<QPoint> stak; // regret the last piece
-
+    bool showpreview;
 
 public:
     // update the chessboard
