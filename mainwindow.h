@@ -24,7 +24,7 @@
 #include <cmath>
 
 #include "game.h"
-
+#include "pve.h"
 using namespace std;
 
 
@@ -37,6 +37,7 @@ private:
     QPushButton *button;
     QString strWinner;  //dispose the string in qt
     game pvp;
+    pve ai;
 
 
 public:

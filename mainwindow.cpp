@@ -19,6 +19,7 @@ mainwindow::mainwindow(QWidget *parent)
     button_pvp->setGeometry(QRect(200,175,200,50));
     button_pvp->setText("PVP");
     connect(button_pvp, &QPushButton::clicked, [this]() {
+        memset(pvp.chessboard,0,sizeof(pvp.chessboard)); // disopse the chessboard
         pvp.show();
     });
 
@@ -28,6 +29,10 @@ mainwindow::mainwindow(QWidget *parent)
     button_pve->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
     button_pve->setGeometry(QRect(200,250,200,50));
     button_pve->setText("PVE");
+    connect(button_pve, &QPushButton::clicked, [this]() {
+        memset(ai.chessboard,0,sizeof(ai.chessboard)); // disopse the chessboard
+        ai.show();
+    });
 
     //the label
     QLabel *label = new QLabel(this);

@@ -1,9 +1,7 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef PVE_H
+#define PVE_H
 
 #include <QMainWindow>
-
-
 #include <QWidget>  // windows
 #include <QPaintEvent>
 #include <QTimer>  //timer
@@ -27,14 +25,12 @@
 using namespace std;
 
 
-class game : public QMainWindow
+
+class pve : public QWidget
 {
     Q_OBJECT
-
 public:
-    game(QWidget *parent = nullptr);
-    ~game();
-
+    explicit pve(QWidget *parent = nullptr);
 private:
     int player;//if player == even , it is the first player.odd is the second player.
     int moveX,moveY; // the mouse message
@@ -50,39 +46,11 @@ private:
     bool showpreview;
 
 public:
-       int chessboard[15][15];
-    // update the chessboard
-    void update_chaessboard_yh(int x,int y);
 
-    //state the eight directions
-    QPoint m_dir[8] = {
-        QPoint(0,-1),
-        QPoint(1,-1),
-        QPoint(1,0),
-        QPoint(1,1),
-        QPoint(0,1),
-        QPoint(-1,1),
-        QPoint(-1,0),
-        QPoint(-1,-1)
-    }; // use eight points to express eight directions
-
-    //dir is the direvtion ; offset is the type of piece
-    int getPointAt(QPoint p,int dir, int offset);
-
+    int chessboard[15][15];
     // judge who win
-    void iswin_yh(int x,int y);
+    void iswin(int x,int y);
 
-    // jude is over
-    int isover_yh(QPoint p);
-
-    // get location of user
-    void person_yh(QMoveEvent *e);
-
-    //get AI
-    void ai();
-
-    //the brain of ai
-    int assese(QPoint noew,int me);
 
     //paint
     void paintEvent(QPaintEvent *);
@@ -100,6 +68,7 @@ public  slots:
     void operat();
     void SelectRadio();
     void back();
-
+signals:
 };
-#endif // GAME_H
+
+#endif // PVE_H

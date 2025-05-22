@@ -13,11 +13,13 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     game.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    pve.cpp
 
 HEADERS += \
     game.h \
-    mainwindow.h
+    mainwindow.h \
+    pve.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
