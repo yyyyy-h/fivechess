@@ -19,7 +19,8 @@ mainwindow::mainwindow(QWidget *parent)
     button_pvp->setGeometry(QRect(200,175,200,50));
     button_pvp->setText("PVP");
     connect(button_pvp, &QPushButton::clicked, [this]() {
-        memset(pvp.chessboard,0,sizeof(pvp.chessboard)); // disopse the chessboard
+
+        pvp.newchaessboard();
         pvp.show();
     });
 

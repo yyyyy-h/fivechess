@@ -71,6 +71,12 @@ game::~game()
 {
 
 }
+
+void game::newchaessboard()
+{
+    memset(chessboard,0,sizeof(chessboard)); // disopse the chessboard
+    player = 1;
+}
 //dir is the direvtion ; offset is the type of piece
 int game::getPointAt(QPoint p,int dir, int offset)
 {
@@ -78,19 +84,96 @@ int game::getPointAt(QPoint p,int dir, int offset)
 }
 
 // judge who win
-void game::iswin_yh(int x,int y)
+void game::iswin(int x,int y)
 {
+    int directions[4][2] =
+    {
+        {1,0},
+        {0,1},
+        {1,1},
+        {1,-1},
+    };
+    if(chessboard[x][y] == 1)
+    {
+    for(int direct = 0;direct < 4;direct++)
+    {
+        int a = 1;
 
-}
+        for(int i = 1;i < 5;i++)
+        {
+            int nextx = x + directions[direct][0] * i;
+            int nexty = y + directions[direct][1] * i;
+
+            if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 1)
+            {
+                a++;
+            }
+            else{break;}
+        }
+        for(int i = 1;i < 5;i++)
+        {
+            int nextx = x - directions[direct][0] * i;
+            int nexty = y - directions[direct][1] * i;
+
+            if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 1)
+            {
+                a++;
+            }
+            else{break;}
+        }
+
+        if(a >= 5)
+        {
+            QMessageBox::information(this,"over","black is winner");
+        }
+    }
+
+    }
+
+    else if(chessboard[x][y] == 2)
+    {
+        for(int direct = 0;direct < 4;direct++)
+        {
+            int a = 1;
+
+            for(int i = 1;i < 5;i++)
+            {
+                int nextx = x + directions[direct][0] * i;
+                int nexty = y + directions[direct][1] * i;
+
+                if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 2)
+                {
+                    a++;
+                }
+                else{break;}
+            }
+            for(int i = 1;i < 5;i++)
+            {
+                int nextx = x - directions[direct][0] * i;
+                int nexty = y - directions[direct][1] * i;
+
+                if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 2)
+                {
+                    a++;
+                }
+                else{break;}
+            }
+
+            if(a >= 5)
+            {
+                QMessageBox::information(this,"over","white is winner");
+            }
+        }
+    }}
 
 // jude is over
-int game::isover_yh(QPoint p)
+int game::isover(QPoint p)
 {
     return 0;
 }
 
 // get the piece location of user
-void game::person_yh(QMoveEvent *e)
+void game::person(QMoveEvent *e)
 {
 
 }
@@ -253,6 +336,8 @@ void game::mousePressEvent(QMouseEvent *e)
 
     // 放置棋子（1表示黑棋，2表示白棋）
     chessboard[X][Y] = player;
+
+    iswin(X,Y);
 
 
     // 记录落子位置用于悔棋

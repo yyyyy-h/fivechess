@@ -52,7 +52,7 @@ private:
 public:
        int chessboard[15][15];
     // update the chessboard
-    void update_chaessboard_yh(int x,int y);
+    void newchaessboard();
 
     //state the eight directions
     QPoint m_dir[8] = {
@@ -70,13 +70,13 @@ public:
     int getPointAt(QPoint p,int dir, int offset);
 
     // judge who win
-    void iswin_yh(int x,int y);
+    void iswin(int x,int y);
 
     // jude is over
-    int isover_yh(QPoint p);
+    int isover(QPoint p);
 
     // get location of user
-    void person_yh(QMoveEvent *e);
+    void person(QMoveEvent *e);
 
     //get AI
     void ai();
