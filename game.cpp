@@ -43,7 +43,7 @@ game::game(QWidget *parent)
     button = new QPushButton(this);
     button->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
     button->setGeometry(QRect(785,400,200,50));
-    button->setText("game start");
+    button->setText("game (re)start");
     connect(button,SIGNAL(clicked()),this,SLOT(operat()));
 
 
@@ -72,7 +72,7 @@ game::~game()
 
 }
 
-void game::newchaessboard()
+void game::newchessboard()
 {
     memset(chessboard,0,sizeof(chessboard)); // disopse the chessboard
     player = 1;
@@ -125,6 +125,9 @@ void game::iswin(int x,int y)
         if(a >= 5)
         {
             QMessageBox::information(this,"over","black is winner");
+
+
+            flags =0;
         }
     }
 
@@ -162,9 +165,14 @@ void game::iswin(int x,int y)
             if(a >= 5)
             {
                 QMessageBox::information(this,"over","white is winner");
+
+
+                flags =0;
             }
         }
-    }}
+    }
+
+}
 
 // jude is over
 int game::isover(QPoint p)
@@ -316,6 +324,10 @@ void game::mouseMoveEvent(QMouseEvent *e)
 //mouse click
 void game::mousePressEvent(QMouseEvent *e)
 {
+    if(flags==0)
+    {
+        return;
+    }
     // 只处理左键点击
     if (e->button() != Qt::LeftButton)
         return;
@@ -345,7 +357,7 @@ void game::mousePressEvent(QMouseEvent *e)
     int ty  = Y;
     stak.push(QPoint(tx, ty));
 
-    // 检查胜负
+
 
     // 切换玩家
     player = (player == 1) ? 2 : 1;
@@ -360,7 +372,7 @@ void game::mousePressEvent(QMouseEvent *e)
 void game::operat()
 {
     flags = 1;
-    player = 1;
+    newchessboard();
 }
 void game::SelectRadio()
 {

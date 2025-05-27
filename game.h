@@ -52,7 +52,7 @@ private:
 public:
        int chessboard[15][15];
     // update the chessboard
-    void newchaessboard();
+    void newchessboard();
 
     //state the eight directions
     QPoint m_dir[8] = {

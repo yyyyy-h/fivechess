@@ -14,12 +14,14 @@ SOURCES += \
     main.cpp \
     game.cpp \
     mainwindow.cpp \
-    pve.cpp
+    pve.cpp \
+    rinking.cpp
 
 HEADERS += \
     game.h \
     mainwindow.h \
-    pve.h
+    pve.h \
+    rinking.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -1,51 +1,34 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
+#ifndef RINKING_H
+#define RINKING_H
 
 #include "game.h"
-#include "pve.h"
-#include"rinking.h"
+#include <QMainWindow>
 #include <QTextEdit>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
-using namespace std;
-
-
-class mainwindow : public QWidget
+#include <QMessageBox>
+class Rinking : public QWidget
 {
     Q_OBJECT
 public:
-    explicit mainwindow(QWidget *parent = nullptr);
+    explicit Rinking(QWidget *parent = nullptr);
 private:
     QPushButton *button;
     QString strWinner;  //dispose the string in qt
-    game pvp;
-    pve ai;
-    Rinking a;
+    QWidget *centralWidget;
     QVBoxLayout *layout;
     QTextEdit *textEdit;  // 显示文件内容
+    QPushButton *openButton;  // 打开文件按钮
 public:
-
-
-    void paintEvent(QPaintEvent *);
-
-    //mouse moves
-    void mouseMoveEvent(QMouseEvent *e);
-
-    //mouse click
-    void mousePressEvent(QMouseEvent *e);
-
+    explicit Rinking(const QString& filePath, QWidget *parent = nullptr);
+    bool loadFile(const QString& filePath);
 public  slots:
     //在 Qt 里，slots 是类的特殊成员函数，能够和信号进行连接。当对应的信号被发射时，槽函数就会被调用。
-    //
-
-    void operat();
-    void SelectRadio();
-    void back();
-
+    void openFile();
 signals:
 };
 
-#endif // MAINWINDOW_H
+#endif // RINKING_H

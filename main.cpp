@@ -8,7 +8,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     mainwindow mai;
-    game w;
     mai.show();
     return a.exec();
 }

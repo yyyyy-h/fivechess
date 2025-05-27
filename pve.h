@@ -1,26 +1,6 @@
 #ifndef PVE_H
 #define PVE_H
-
-#include <QMainWindow>
-#include <QWidget>  // windows
-#include <QPaintEvent>
-#include <QTimer>  //timer
-#include <QDebug>
-#include <QPainter>
-#include <QMouseEvent>  //get mouse message
-#include <QPainterPath>
-#include <QColor>
-#include <QBrush>
-#include <QMessageBox> //tanchuang
-#include <QPushButton>
-#include <QRadioButton>
-#include <QButtonGroup>
-#include <QPalette>
-#include <QtDebug>
-#include <QLabel>
-#include <bits/stdc++.h>
-#include <iostream>
-#include <cmath>
+#include "game.h"
 
 using namespace std;
 

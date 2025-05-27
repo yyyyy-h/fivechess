@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-
+#include "QStyleOption"
 mainwindow::mainwindow(QWidget *parent)
     : QWidget{parent}
 {
@@ -20,7 +20,7 @@ mainwindow::mainwindow(QWidget *parent)
     button_pvp->setText("PVP");
     connect(button_pvp, &QPushButton::clicked, [this]() {
 
-        pvp.newchaessboard();
+        pvp.newchessboard();
         pvp.show();
     });
 
@@ -34,6 +34,19 @@ mainwindow::mainwindow(QWidget *parent)
         memset(ai.chessboard,0,sizeof(ai.chessboard)); // disopse the chessboard
         ai.show();
     });
+
+
+    //set botton_ranking
+    QPushButton *button_ranking = new QPushButton(this);
+    button_ranking->setStyleSheet("font:Bold;font-size:15px;color:black;background-color:rgb(255,255,255);border:2px;border-radius:0px;padding:2px 4px;");
+    button_ranking->setGeometry(QRect(0,0,50,50));
+    button_ranking->setText("rank");
+    connect(button_ranking, &QPushButton::clicked, [this]() {
+
+
+        a.show();
+    });
+
 
     //the label
     QLabel *label = new QLabel(this);
