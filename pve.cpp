@@ -63,12 +63,116 @@ pve::pve(QWidget *parent)
     setMouseTracking(true);
     memset(chessboard,0,sizeof(chessboard)); // disopse the chessboard
 
+    scoreMapVec.clear();
+    for(int i = 0; i < 15; i++)
+    {
+        vector<int>linScores;
+        for(int j = 0; j < 15; j++)
+        {
+            linScores.push_back(0);
+            scoreMapVec.push_back(linScores);
+        }
+    }
 
+    playerFlag = true;
+}
+
+void pve::newchessboard()
+{
+    memset(chessboard,0,sizeof(chessboard)); // disopse the chessboard
+    aix = -1;
+    aiy =-1;
+    player = 1;
 }
 
 // judge who win
 void pve::iswin(int x,int y)
 {
+     int directions[4][2] =
+            {
+             {1,0},
+             {0,1},
+             {1,1},
+             {1,-1},
+             };
+    if(chessboard[x][y] == 1)
+    {
+        for(int direct = 0;direct < 4;direct++)
+        {
+            int a = 1;
+
+        for(int i = 1;i < 5;i++)
+        {
+            int nextx = x + directions[direct][0] * i;
+            int nexty = y + directions[direct][1] * i;
+
+            if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 1)
+            {
+                a++;
+            }
+                else{break;}
+            }
+            for(int i = 1;i < 5;i++)
+            {
+                int nextx = x - directions[direct][0] * i;
+                int nexty = y - directions[direct][1] * i;
+
+                if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 1)
+                {
+                    a++;
+                }
+                    else{break;}
+                }
+
+            if(a >= 5)
+            {
+                QMessageBox::information(this,"over","user is winner");
+
+
+                flags =0;
+            }
+        }
+
+    }
+
+        else if(chessboard[x][y] == 2)
+        {
+            for(int direct = 0;direct < 4;direct++)
+            {
+                int a = 1;
+
+                for(int i = 1;i < 5;i++)
+                {
+                    int nextx = x + directions[direct][0] * i;
+                    int nexty = y + directions[direct][1] * i;
+
+                    if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 2)
+                    {
+                        a++;
+                    }
+                    else{break;}
+                }
+                for(int i = 1;i < 5;i++)
+                {
+                    int nextx = x - directions[direct][0] * i;
+                    int nexty = y - directions[direct][1] * i;
+
+                    if((nextx >= 0 && nextx < 15) && (nexty >= 0 && nexty < 15) && chessboard[nextx][nexty] == 2)
+                    {
+                        a++;
+                    }
+                    else{break;}
+                }
+
+                if(a >= 5)
+                {
+                    QMessageBox::information(this,"over","AI is winner");
+
+
+                    flags =0;
+                }
+            }
+        }
 
 }
 
@@ -149,6 +253,188 @@ void pve::paintEvent(QPaintEvent *)
 
 }
 
+void pve::calculateScore()
+{
+    int personnum = 0;
+    int botnum = 0;
+    int emptynum = 0;
+
+    scoreMapVec.clear();
+    scoreMapVec.resize(15, vector<int>(15, 0));
+
+    for(int x = 0;x < 15;x++)
+    {
+        for(int y = 0; y < 15; y++)
+        {
+            if(x > 0&& y > 0&& chessboard[x][y] == 0)
+            {
+                for(int j = -1;j <= 1;j++)
+                {
+                    for(int i = -1;i <= 1;i++)
+                    {
+                        int px =0;
+                        int py =0;
+                        personnum = 0;
+                        botnum = 0;
+                        emptynum = 0;
+
+                        if(!(j == 0&&i == 0))
+                            {
+                                //每个方向延伸4子
+                                //对玩家黑子从正反两方面评分
+                            for(int a = 1;a <= 4 ;a++)
+                                {
+                                    if(x + a * j > 0 && x + a * j < 15 && y + a * i > 0 && y + a * i < 15 && chessboard[x + a * j][y + a * i] == 1)
+                                {
+                                    personnum++;
+                                        px =x + a * j;
+                                        py=y + a * i;
+                                    }
+                                    else if((x + a * j > 0 && x + a * j < 15 && y + a * i > 0 && y + a * i < 15 && chessboard[x + a * j][y + a * i] == 0)&&(x + (a+1) * j > 0 && x +(a+1) * j < 15 && y + (a+1) * i > 0 && y + (a+1)  * i < 15 && chessboard[x + (a+1)  * j][y + (a+1)  * i] == 1))
+                                    {
+                                        emptynum++;
+                                    }
+                                    else
+                                        break;
+                            }
+                            for(int a = 1;a <= 4;a++)
+                            {
+                                if(x - a * j > 0 && x - a * j < 15 && y - a * i > 0 && y - a * i < 15 && chessboard[x - a * j][y - a * i] == 1)
+                                {
+                                    personnum++;
+                                }
+                                else if((x - a * j > 0 && x - a * j < 15 && y - a * i > 0 && y - a * i < 15 && chessboard[x - a * j][y - a * i] == 0)&&(x - (a-1) * j > 0 && x - (a-1) * j < 15 && y - (a-1) * i > 0 && y - (a-1) * i < 15 && chessboard[x - (a-1) * j][y - (a-1) * i] == 1))
+                                {
+                                    emptynum++;
+                                }
+                                else
+                                    break;
+                            }
+
+
+
+                            if(personnum == 1)
+                            {
+                                if(!(fabs(x-px)==0&&fabs(y-py)==0))
+                                scoreMapVec[x][y] += 30/fabs(x-px)+30/fabs(y-py);
+
+                            }
+                            else if(personnum == 2)
+                            {
+                                if(emptynum == 1)
+                                    scoreMapVec[x][y] += 40;
+                                else if(emptynum >= 2)
+                                    scoreMapVec[x][y] += 60;
+                            }
+                            else if(personnum == 3)
+                            {
+                                //优先级不同
+                                if(emptynum == 1)
+                                {if(!(fabs(x-px)==0&&fabs(y-py)==0))
+                                        scoreMapVec[x][y] += 1000/fabs(x-px)+1000/fabs(y-py);}
+                                else if(emptynum == 2){
+                                    if(!(fabs(x-px)==0&&fabs(y-py)==0))
+                                        scoreMapVec[x][y] += 9100/fabs(x-px)+9100/fabs(y-py);}
+
+                            }
+                            else if(personnum == 4)
+                                scoreMapVec[x][y] += 10100;
+
+                            //进行清空
+                            emptynum = 0;
+                            //对AI进行评分
+                            for(int a = 1;a <= 4;a++)
+                            {
+                                if(x + a * j > 0 && x + a * j < 15 && y + a * i > 0 && y + a * i < 15 && chessboard[x + a * j][y + a * i] == 2)
+                                {
+                                    botnum++;
+                                }
+                                else if((x + a * j > 0 && x + a * j < 15 && y + a * i > 0 && y + a * i < 15 && chessboard[x + a * j][y + a * i] == 0)&&(x + (a+1) * j > 0 && x +(a+1) * j < 15 && y + (a+1) * i > 0 && y + (a+1)  * i < 15 && chessboard[x + (a+1)  * j][y + (a+1)  * i] == 2))
+                                {
+                                    emptynum++;
+                                }
+                                else
+                                    break;
+                            }
+                            for(int a = 1;a <= 4;a++)
+                            {
+                                if(x - a * j > 0 && x - a * j < 15 && y - a * i > 0 && y - a * i < 15 && chessboard[x - a * j][y - a * i] == 2)
+                                {
+                                    botnum++;
+                                }
+                                else if((x - a * j > 0 && x - a * j < 15 && y - a * i > 0 && y - a * i < 15 && chessboard[x - a * j][y - a * i] == 0)&&(x - (a-1) * j > 0 && x - (a-1) * j < 15 && y - (a-1) * i > 0 && y - (a-1) * i < 15 && chessboard[x - (a-1) * j][y - (a-1) * i] == 2))
+                                {
+                                    emptynum++;
+                                }
+                                else
+                                    break;
+                            }
+                            if(botnum == 0)
+                                scoreMapVec[x][y] += 5;
+                            else if(botnum == 1)
+                                scoreMapVec[x][y] += 10;
+                            else if(botnum == 2)
+                            {
+                                if(emptynum == 1)
+                                    scoreMapVec[x][y] += 250;
+                                else if(emptynum == 2)
+                                    scoreMapVec[x][y] += 350;
+                            }
+                            else if(botnum == 3)
+                            {
+                                //优先级不同
+                                if(emptynum == 1)
+                                    scoreMapVec[x][y] += 755;
+                                else if(emptynum == 2)
+                                    scoreMapVec[x][y] += 800;
+                            }
+                            else if(botnum == 4)
+                                scoreMapVec[x][y] += 20000;
+                            }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void pve::actionByAI()
+{
+    int clickx;
+    int clicky;
+    //计算评分
+    calculateScore();
+    //找出最大评分位置
+    int maxscore = 0;
+    vector<pair<int,int>>maxPoints;
+    for(int x = 1;x < 15;x++)
+    {
+        for(int y = 1;y < 15;y++)
+        {
+            //前提坐标为空
+            if(chessboard[x][y] == 0)
+            {
+                if(scoreMapVec[x][y] > maxscore)
+                {
+                    maxPoints.clear();
+                    maxscore = scoreMapVec[x][y];
+                    maxPoints.push_back(make_pair(x,y));
+                }
+                else if(scoreMapVec[x][y] == maxscore)
+                    maxPoints.push_back(make_pair(x,y));
+            }
+        }
+    }
+    srand((unsigned)time(0));
+    int index = rand()%maxPoints.size();
+    pair<int,int>pointPair = maxPoints.at(index);
+    clickx = pointPair.first;
+    clicky = pointPair.second;
+    chessboard[clickx][clicky] = 2;
+    iswin(clickx,clicky);
+    update();
+}
+
 //mouse moves
 void pve::mouseMoveEvent(QMouseEvent *e)
 {
@@ -226,12 +512,11 @@ void pve::mousePressEvent(QMouseEvent *e)
     stak.push(QPoint(tx, ty));
 
     // 检查胜负
+    iswin(X,Y);
 
-    // 切换玩家
-    player = (player == 1) ? 2 : 1;
 
     // 如果是人机对战模式，且轮到AI
-
+    actionByAI();
 
     // 重绘界面
     update();
@@ -240,6 +525,7 @@ void pve::operat()
 {
     flags = 1;
     player = 1;
+    newchessboard();
 }
 void pve::SelectRadio()
 {
