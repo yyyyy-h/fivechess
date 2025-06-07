@@ -1,6 +1,9 @@
 #ifndef PVE_H
 #define PVE_H
 #include <vector>
+#include <QInputDialog>
+#include <QFile>
+#include <QRegularExpression>
 #include "game.h"
 
 using namespace std;
@@ -19,11 +22,11 @@ public:
 
     int aix;
     int aiy;
+    QString username;
     bool playerFlag;
-
+    bool modifyPointsInFile(const QString &fileName, const QString &playerName,  int pointsToAdd);
     void actionByAI();
-
-
+    void Setname();
 private:
     int player;//if player == even , it is the first player.odd is the second player.
     int moveX,moveY; // the mouse message
@@ -33,6 +36,7 @@ private:
     int game_model;//  1 == PVC, 2 == PVP
     int X,Y;
     QPushButton *button;
+    QPushButton *sign;
     QButtonGroup *selectModelGroup;
     QString strWinner;  //dispose the string in qt
     stack<QPoint> stak; // regret the last piece

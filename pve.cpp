@@ -4,6 +4,9 @@ pve::pve(QWidget *parent)
     : QWidget{parent}
 {
 
+    username = "";
+
+
     //preview
     showpreview = false;
 
@@ -47,6 +50,16 @@ pve::pve(QWidget *parent)
     connect(button,SIGNAL(clicked()),this,SLOT(operat()));
 
 
+    //set username
+    sign = new QPushButton(this);
+    sign->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
+    sign->setGeometry(QRect(785,100,200,50));
+    sign->setText("sign in");
+    connect(sign,SIGNAL(clicked()),this,SLOT(Setname()));
+    bool connected = connect(sign, &QPushButton::clicked, this, &pve::Setname);
+    qDebug() << "信号槽连接状态:" << (connected ? "成功" : "失败");
+
+
     //regrat
     while(!stak.empty())
     {
@@ -84,7 +97,70 @@ void pve::newchessboard()
     aiy =-1;
     player = 1;
 }
+bool pve::modifyPointsInFile(const QString &fileName, const QString &playerName, int pointsToAdd) {
+    QString tempFileName = fileName + ".temp";
+    QFile inputFile(fileName);
+    QFile outputFile(tempFileName);
 
+    if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "无法打开原文件:" << fileName;
+        return false;
+    }
+
+    if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "无法创建临时文件:" << tempFileName;
+        inputFile.close();
+        return false;
+    }
+
+    QTextStream in(&inputFile);
+    QTextStream out(&outputFile);
+    bool found = false;
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        QRegularExpression re(QString(R"(^\d+\s+player\s+%1\s+(\d+)\s+points$)").arg(playerName));
+        QRegularExpressionMatch match = re.match(line);
+
+        if (match.hasMatch()) {
+            // 获取当前分数并转换为整数
+            int currentPoints = match.captured(1).toInt();
+            // 计算新分数（原分数 + pointsToAdd）
+            int newPoints = currentPoints + pointsToAdd;
+            // 替换为新分数
+            QString newLine = line.replace(match.captured(1), QString::number(newPoints));
+            out << newLine << "\n";
+            found = true;
+            qDebug() << "玩家" << playerName << "分数从" << currentPoints << "增加到" << newPoints;
+        } else {
+            out << line << "\n";
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (!found) {
+        QFile::remove(tempFileName);
+        qDebug() << "未找到玩家:" << playerName;
+        return false;
+    }
+
+    if (QFile::exists(fileName)) {
+        if (!QFile::remove(fileName)) {
+            qDebug() << "无法删除原文件:" << fileName;
+            return false;
+        }
+    }
+
+    if (!QFile::rename(tempFileName, fileName)) {
+        qDebug() << "无法重命名临时文件:" << tempFileName;
+        return false;
+    }
+
+    qDebug() << "文件修改成功:" << fileName;
+    return true;
+}
 // judge who win
 void pve::iswin(int x,int y)
 {
@@ -130,6 +206,8 @@ void pve::iswin(int x,int y)
 
 
                 flags =0;
+
+                modifyPointsInFile("ranking.txt",username,200);
             }
         }
 
@@ -488,6 +566,9 @@ void pve::mousePressEvent(QMouseEvent *e)
     if (e->button() != Qt::LeftButton)
         return;
 
+    if(flags==0)
+        return;
+
     int x = e->x();
     int y = e->y();
 
@@ -516,8 +597,10 @@ void pve::mousePressEvent(QMouseEvent *e)
 
 
     // 如果是人机对战模式，且轮到AI
+    if(flags!=0)
+    {
     actionByAI();
-
+    }
     // 重绘界面
     update();
 }
@@ -530,6 +613,26 @@ void pve::operat()
 void pve::SelectRadio()
 {
 
+}
+void pve::Setname()
+{
+    bool ok;
+    QString name = QInputDialog::getText(
+        this,                  // 父窗口指针
+        "输入名称",            // 对话框标题
+        "请输入你的名称:",      // 提示文本
+        QLineEdit::Normal,     // 输入模式（普通文本）
+        "",                    // 默认文本
+        &ok                    // 用于判断用户是否点击了"确定"
+        );
+
+    if (ok && !name.isEmpty()) {
+        // 用户点击了"确定"且输入不为空
+        // 处理获取到的名称（例如保存到成员变量或显示在界面上）
+        qDebug() << "用户输入的名称是:" << name;
+        username = name;  // 假设你有一个设置玩家名称的函数
+        qDebug() << "名称是:" << name;
+    }
 }
 void pve::back()
 {

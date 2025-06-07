@@ -11,8 +11,26 @@ Rinking::Rinking(QWidget *parent)
     // 加载文件
     QString filePath= "ranking.txt";
     if (!loadFile(filePath)) {
-        textEdit->setPlainText("无法加载文件: " + filePath);
+        qDebug()<<"文件不存在";
     }
+
+    QFile file(filePath);
+    // 文件不存在时创建新文件
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::NewOnly)) {
+        QTextStream out(&file);
+        out << "";
+        file.close();
+        qDebug() << "已成功创建" << filePath;
+    } else {
+        // 检查文件是否已存在
+        if (file.exists()) {
+            qDebug() << "文件已存在，未创建新文件:" << filePath;
+        } else {
+            qDebug() << "无法创建文件，可能是权限问题或路径无效:" << filePath;
+
+        }
+    }
+
 
     // 设置窗口标题和大小
     setWindowTitle("Ranking");
