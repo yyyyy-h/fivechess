@@ -60,7 +60,7 @@ pve::pve(QWidget *parent)
     qDebug() << "信号槽连接状态:" << (connected ? "成功" : "失败");
 
 
-    //regrat
+    //regret
     while(!stak.empty())
     {
         stak.pop();
@@ -68,8 +68,10 @@ pve::pve(QWidget *parent)
     QPushButton *back_button=new QPushButton(this);
     back_button->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
     back_button->setGeometry(QRect(785,490,200,50));
-    back_button->setText("regrat");
+    back_button->setText("regret");
     connect(button,SIGNAL(clicked()),this,SLOT(back()));
+    bool Connected = connect(back_button, &QPushButton::clicked, this, &pve::back);
+    qDebug() << "信号槽连接状态:" << (connected ? "成功" : "失败");
 
 
     //get mouse message
@@ -510,6 +512,11 @@ void pve::actionByAI()
     clicky = pointPair.second;
     chessboard[clickx][clicky] = 2;
     iswin(clickx,clicky);
+    stak.push(QPoint(clickx, clicky)); // 记录AI位置
+    playerStack.push(2);                // 记录玩家类型（2=AI）
+
+    iswin(clickx, clicky);
+    update();
     update();
 }
 
@@ -584,13 +591,10 @@ void pve::mousePressEvent(QMouseEvent *e)
         return;
 
     // 放置棋子（1表示黑棋，2表示白棋）
-    chessboard[X][Y] = player;
-
-
+    chessboard[X][Y] = 1;
     // 记录落子位置用于悔棋
-    int tx  = X;
-    int ty  = Y;
-    stak.push(QPoint(tx, ty));
+    stak.push(QPoint(X, Y));          // 记录位置
+    playerStack.push(1);               // 记录玩家类型（1=人类）
 
     // 检查胜负
     iswin(X,Y);
@@ -636,5 +640,32 @@ void pve::Setname()
 }
 void pve::back()
 {
+    for(int i = 1;i<= 2;i++)
+    {
+    if (stak.empty() || playerStack.empty()) {
+        return; // 无棋可悔
+    }
 
+    // 取出上一步玩家类型
+    int lastPlayer = playerStack.top();
+    QPoint lastPos = stak.top();
+
+    // 清空棋盘
+    chessboard[lastPos.x()][lastPos.y()] = 0;
+
+    // 弹出栈顶（撤销上一步）
+    stak.pop();
+    playerStack.pop();
+
+    // 根据上一步玩家类型，恢复当前玩家
+    if (lastPlayer == 1) {
+        // 上一步是人类，悔棋后当前玩家应为AI（但人类悔棋后需重新落子，故设为人类）
+        player = 1; // 人类重新落子
+    } else {
+        // 上一步是AI，悔棋后当前玩家应为人类
+        player = 1;
+    }
+
+    update();
+    }
 }

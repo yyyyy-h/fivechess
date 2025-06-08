@@ -55,8 +55,9 @@ game::game(QWidget *parent)
     QPushButton *back_button=new QPushButton(this);
     back_button->setStyleSheet("font:Bold;font-size:24px;color:white;background-color:rgb(30,144,255);border:2px;border-radius:10px;padding:2px 4px;");
     back_button->setGeometry(QRect(785,490,200,50));
-    back_button->setText("regrat");
-    connect(button,SIGNAL(clicked()),this,SLOT(back()));
+    back_button->setText("regret");
+    connect(back_button, &QPushButton::clicked, this, &game::back);
+
 
 
     //get mouse message
@@ -351,19 +352,12 @@ void game::mousePressEvent(QMouseEvent *e)
 
     iswin(X,Y);
 
-
-    // 记录落子位置用于悔棋
-    int tx  = X;
-    int ty  = Y;
-    stak.push(QPoint(tx, ty));
-
-
-
     // 切换玩家
     player = (player == 1) ? 2 : 1;
 
-    // 如果是人机对战模式，且轮到AI
-
+    //记录落子位置和玩家
+    stak.push(QPoint(X, Y));
+    playerStack.push(player); // 压入当前玩家（1或2）
 
     // 重绘界面
     update();
@@ -380,5 +374,20 @@ void game::SelectRadio()
 }
 void game::back()
 {
+    if (stak.empty()) return; // 无棋可悔
 
+    // 取出最后一步的位置和玩家
+    QPoint lastPos = stak.top();
+
+    // 清空棋盘位置
+    chessboard[lastPos.x()][lastPos.y()] = 0;
+
+    // 弹出栈顶元素（撤销最后一步）
+    stak.pop();
+    playerStack.pop();
+
+    // 恢复玩家到上一步（例如：上一步是玩家1落子，悔棋后当前玩家应变回玩家1）
+    player =(player == 1) ? 2 : 1;
+
+    update(); // 重绘界面
 }

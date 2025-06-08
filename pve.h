@@ -41,6 +41,7 @@ private:
     QString strWinner;  //dispose the string in qt
     stack<QPoint> stak; // regret the last piece
     bool showpreview;
+    QStack<int> playerStack; //记录每一步的玩家（1或2）
 
 public:
 

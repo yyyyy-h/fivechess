@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-
+#include <QStack>
 #include <QWidget>  // windows
 #include <QPaintEvent>
 #include <QTimer>  //timer
@@ -46,8 +46,10 @@ private:
     QPushButton *button;
     QButtonGroup *selectModelGroup;
     QString strWinner;  //dispose the string in qt
-    stack<QPoint> stak; // regret the last piece
     bool showpreview;
+    stack<QPoint> stak; // 记录落子位置
+    QStack<int> playerStack; //记录每一步的玩家（1或2）
+
 
 public:
        int chessboard[15][15];
