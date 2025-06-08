@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QRegularExpression>
 class Rinking : public QWidget
 {
     Q_OBJECT
@@ -25,6 +26,7 @@ private:
 public:
     explicit Rinking(const QString& filePath, QWidget *parent = nullptr);
     bool loadFile(const QString& filePath);
+    bool sortFileByPoints(const QString &fileName);
 public  slots:
     //在 Qt 里，slots 是类的特殊成员函数，能够和信号进行连接。当对应的信号被发射时，槽函数就会被调用。
     void openFile();

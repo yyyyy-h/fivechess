@@ -63,27 +63,4 @@ void mainwindow::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-//mouse moves
-void mainwindow::mouseMoveEvent(QMouseEvent *e)
-{
 
-}
-
-//mouse click
-void mainwindow::mousePressEvent(QMouseEvent *e)
-{
-
-}
-
-void mainwindow::operat()
-{
-
-}
-void mainwindow::SelectRadio()
-{
-
-}
-void mainwindow::back()
-{
-
-}

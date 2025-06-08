@@ -39,9 +39,7 @@ private:
     int player;//if player == even , it is the first player.odd is the second player.
     int moveX,moveY; // the mouse message
     int currentX,currentY;//the last location of piece
-    bool lock; // the lock of chessboard
     int flags; // the state of game. 1 == start ,0 == over
-    int game_model;//  1 == PVC, 2 == PVP
     int X,Y;
     QPushButton *button;
     QButtonGroup *selectModelGroup;
@@ -74,18 +72,6 @@ public:
     // judge who win
     void iswin(int x,int y);
 
-    // jude is over
-    int isover(QPoint p);
-
-    // get location of user
-    void person(QMoveEvent *e);
-
-    //get AI
-    void ai();
-
-    //the brain of ai
-    int assese(QPoint noew,int me);
-
     //paint
     void paintEvent(QPaintEvent *);
 
@@ -100,7 +86,6 @@ public  slots:
     //
 
     void operat();
-    void SelectRadio();
     void back();
 
 };

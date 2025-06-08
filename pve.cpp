@@ -118,50 +118,62 @@ bool pve::modifyPointsInFile(const QString &fileName, const QString &playerName,
     QTextStream in(&inputFile);
     QTextStream out(&outputFile);
     bool found = false;
+    int maxId = 0;
 
+    // 读取并处理原有内容
     while (!in.atEnd()) {
         QString line = in.readLine();
-        QRegularExpression re(QString(R"(^\d+\s+player\s+%1\s+(\d+)\s+points$)").arg(playerName));
+        QRegularExpression re(QString(R"(^\s*(\d+)\s+player\s+%1\s+(\d+)\s+points$)").arg(playerName));
         QRegularExpressionMatch match = re.match(line);
 
         if (match.hasMatch()) {
             // 获取当前分数并转换为整数
-            int currentPoints = match.captured(1).toInt();
+            int currentPoints = match.captured(2).toInt();
             // 计算新分数（原分数 + pointsToAdd）
             int newPoints = currentPoints + pointsToAdd;
             // 替换为新分数
-            QString newLine = line.replace(match.captured(1), QString::number(newPoints));
+            QString newLine = line.replace(match.captured(2), QString::number(newPoints));
             out << newLine << "\n";
             found = true;
             qDebug() << "玩家" << playerName << "分数从" << currentPoints << "增加到" << newPoints;
         } else {
+            // 提取最大ID
+            QRegularExpression idRe(R"(^\s*(\d+)\s+)");
+            QRegularExpressionMatch idMatch = idRe.match(line);
+            if (idMatch.hasMatch()) {
+                int id = idMatch.captured(1).toInt();
+                if (id > maxId) maxId = id;
+            }
             out << line << "\n";
         }
+    }
+    bool p = !playerName.contains(' ');
+    // 如果未找到玩家，则添加新记录
+    if (!found&&p) {
+        int newId = maxId + 1;
+        QString newLine = QString("%1 player %2 %3 points").arg(newId).arg(playerName).arg(pointsToAdd);
+        out << newLine << "\n";
+        qDebug() << "未找到玩家" << playerName << "，添加新记录，分数为" << pointsToAdd;
+        found = true; // 标记为已处理
     }
 
     inputFile.close();
     outputFile.close();
 
-    if (!found) {
-        QFile::remove(tempFileName);
-        qDebug() << "未找到玩家:" << playerName;
-        return false;
-    }
-
-    if (QFile::exists(fileName)) {
-        if (!QFile::remove(fileName)) {
-            qDebug() << "无法删除原文件:" << fileName;
-            return false;
+    // 删除原文件并将临时文件重命名为原文件
+    if (QFile::remove(fileName)) {
+        if (QFile::rename(tempFileName, fileName)) {
+            return true;
+        } else {
+            qDebug() << "无法重命名临时文件:" << tempFileName << "为" << fileName;
         }
+    } else {
+        qDebug() << "无法删除原文件:" << fileName;
     }
 
-    if (!QFile::rename(tempFileName, fileName)) {
-        qDebug() << "无法重命名临时文件:" << tempFileName;
-        return false;
-    }
-
-    qDebug() << "文件修改成功:" << fileName;
-    return true;
+    // 清理临时文件
+    QFile::remove(tempFileName);
+    return false;
 }
 // judge who win
 void pve::iswin(int x,int y)
@@ -614,17 +626,14 @@ void pve::operat()
     player = 1;
     newchessboard();
 }
-void pve::SelectRadio()
-{
 
-}
 void pve::Setname()
 {
     bool ok;
     QString name = QInputDialog::getText(
         this,                  // 父窗口指针
         "输入名称",            // 对话框标题
-        "请输入你的名称:",      // 提示文本
+        "请输入你的名称(不能含有空格):",      // 提示文本
         QLineEdit::Normal,     // 输入模式（普通文本）
         "",                    // 默认文本
         &ok                    // 用于判断用户是否点击了"确定"

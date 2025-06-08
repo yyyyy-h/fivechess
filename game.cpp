@@ -34,8 +34,6 @@ game::game(QWidget *parent)
     label->setGeometry(785,700,200,50);
     label->setStyleSheet("color : black ; font-size:22px");
 
-    // select botton
-    game_model = 1;
 
 
 
@@ -173,30 +171,6 @@ void game::iswin(int x,int y)
         }
     }
 
-}
-
-// jude is over
-int game::isover(QPoint p)
-{
-    return 0;
-}
-
-// get the piece location of user
-void game::person(QMoveEvent *e)
-{
-
-}
-
-//get the piece location of ai
-void game::ai()
-{
-
-}
-
-//the brain of ai
-int game::assese(QPoint noew,int me)
-{
-    return 0;
 }
 
 //paint
@@ -368,10 +342,7 @@ void game::operat()
     flags = 1;
     newchessboard();
 }
-void game::SelectRadio()
-{
 
-}
 void game::back()
 {
     if (stak.empty()) return; // 无棋可悔

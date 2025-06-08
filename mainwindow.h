@@ -31,19 +31,9 @@ public:
 
     void paintEvent(QPaintEvent *);
 
-    //mouse moves
-    void mouseMoveEvent(QMouseEvent *e);
-
-    //mouse click
-    void mousePressEvent(QMouseEvent *e);
 
 public  slots:
     //在 Qt 里，slots 是类的特殊成员函数，能够和信号进行连接。当对应的信号被发射时，槽函数就会被调用。
-    //
-
-    void operat();
-    void SelectRadio();
-    void back();
 
 signals:
 };
